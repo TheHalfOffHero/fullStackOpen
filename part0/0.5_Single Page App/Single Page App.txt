@@ -1,4 +1,4 @@
-title New Note: Sequence Diagram
+title Single Page App: Sequence Diagram
 
 browser->server: HTTP GET https://studies.cs.helsinki.fi/exampleapp/spa
 

@@ -1,0 +1,5 @@
+title New Note Single Page App: Sequence Diagram
+
+browser->server: HTTP POST https://studies.cs.helsinki.fi/exampleapp/new_note_spa
+
+note over browser: Javascript event handler creates a new note and adds it to notes list with notes.push(note)
