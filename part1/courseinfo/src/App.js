@@ -8,18 +8,48 @@ const App = () => {
   const exercises3 = 14
 
   return (
+    //Final content should look similar to this
+
+    
+    //<div>
+    //  <Header course={course} />
+    //  <Content ... />
+    //  <Total ... />
+    //</div>
+
     <div>
-      <h1>{course}</h1>
-      <p>
-        {part1} {exercises1}
-      </p>
-      <p>
-        {part2} {exercises2}
-      </p>
-      <p>
-        {part3} {exercises3}
-      </p>
-      <p>Number of exercises {exercises1 + exercises2 + exercises3}</p>
+      <Header course={course} />
+      <Content part1={part1} excercise1={exercises1} part2={part2} excercise2={exercises2} part3={part3} excercise3={exercises3}/>
+      <Total excercise1={exercises1} excercise2={exercises2} excercise3={exercises3}/>
+    </div>
+  )
+}
+
+//Header should take care of rendering the name of the course
+const Header = (props) => {
+  return (
+  <div>
+    <h1>{props.course}</h1>
+  </div>
+  )
+}
+
+//Content should render the parts and their number of excercises 
+const Content = (props) => {
+  return (
+    <div>
+      <p>{props.part1} {props.excercise1}</p>
+      <p>{props.part2} {props.excercise2}</p>
+      <p>{props.part3} {props.excercise3}</p>
+    </div>
+  )
+}
+
+//Total should render the total number of excercises
+const Total = (props) => {
+  return (
+    <div>
+      <p>Number of excercises {props.excercise1 + props.excercise2 + props.excercise3}</p>
     </div>
   )
 }
