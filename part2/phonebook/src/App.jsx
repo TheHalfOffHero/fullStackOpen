@@ -1,21 +1,31 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import Filter from './Filter'
 import PersonForm from './PersonForm'
 import Persons from './Persons'
+import axios from 'axios'
 
 const App = () => {
-  const [persons, setPersons] = useState([
-    { 
-      name: 'Arto Hellas',
-      number: '040-1234'
-    }
-  ])
+  const [persons, setPersons] = useState([])
   const [newName, setNewName] = useState('')
   const [newNumber, setNewNumber] = useState('')
   const [searchTerm, setSearchTerm] = useState('')
 
+
+  // Fetch data from server
+  useEffect(() => {
+    console.log('effect')
+    axios.get('http://localhost:3001/persons')
+          .then(response => {
+            console.log('promise fulfilled')
+            setPersons(response.data)
+          })
+  }, [])
+  console.log('render', persons.length, 'persons')
+
+  // Filter items with reduce method
   const filteredItems = persons.filter(person => person.name.toLowerCase().includes(searchTerm.toLowerCase()))
 
+  // Add name to the list with event hook, checks if name is already in the list
   const addName = (event) => {
     console.log('addName', event)
     event.preventDefault()
@@ -32,6 +42,7 @@ const App = () => {
     setNewNumber('')
   }
 
+  // Event handlers for input fields
   const handleNameChange = (event) => {
     console.log(event.target.value)
     setNewName(event.target.value)
