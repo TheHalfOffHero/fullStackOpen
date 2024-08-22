@@ -2,22 +2,24 @@ import { useState, useEffect } from 'react'
 import Filter from './Filter'
 import PersonForm from './PersonForm'
 import Persons from './Persons'
-import axios from 'axios'
+import personService from './services/persons'
+import Notification from './Notification'
 
 const App = () => {
   const [persons, setPersons] = useState([])
   const [newName, setNewName] = useState('')
   const [newNumber, setNewNumber] = useState('')
   const [searchTerm, setSearchTerm] = useState('')
+  const [message, setMessage] = useState(null)
 
 
   // Fetch data from server
   useEffect(() => {
     console.log('effect')
-    axios.get('http://localhost:3001/persons')
-          .then(response => {
+    personService.getAll()
+          .then(initialPersons => {
             console.log('promise fulfilled')
-            setPersons(response.data)
+            setPersons(initialPersons)
           })
   }, [])
   console.log('render', persons.length, 'persons')
@@ -34,12 +36,48 @@ const App = () => {
       number: newNumber
     }
     if (persons.find(person => person.name === newName)) {
-      alert(`${newName} is already added to phonebook`)
+      if (window.confirm(`${newName} is already added to phonebook, replace the old number with a new one?`)) {
+        const person = persons.find(person => person.name === newName)
+        const changedPerson = { ...person, number: newNumber }
+        
+        personService.update(person.id, changedPerson)
+        .then(returnedPerson => {
+          setPersons(persons.map(person => person.id !== returnedPerson.id ? person : returnedPerson))
+          setNewName('')
+          setNewNumber('')
+        })
+        return
+      }
+      setNewName('')
+      setNewNumber('')
       return
     }
-    setPersons(persons.concat(nameObject))
-    setNewName('')
-    setNewNumber('')
+    personService.create(nameObject)
+    .then(newPerson => {
+      console.log(newPerson)
+      setPersons(persons.concat(newPerson))
+      setNewName('')
+      setNewNumber('')
+    }).then(() => {
+      setMessage(`Added ${newName}`)
+      setTimeout(() => {
+        setMessage(null)
+      }, 5000)
+    })
+  }
+
+  const deletePerson = (id) => {
+    const person = persons.find(person => person.id === id)
+    if (window.confirm(`Delete ${person.name} ?`)) {
+        personService.remove(id)
+        .then(() => {
+          setMessage(`Deleted ${person.name}`)
+          setTimeout(() => {
+            setMessage(null)
+          }, 5000)
+        })
+    }
+    setPersons(persons.filter(person => person.id !== id))
   }
 
   // Event handlers for input fields
@@ -59,6 +97,7 @@ const App = () => {
   }
   return (
     <div>
+      <Notification message={message} />
       <h2>Phonebook</h2>
       < Filter filter={searchTerm} onChange={handleSearchChange} />
       <h2>Add a new</h2>
@@ -71,7 +110,7 @@ const App = () => {
         handleNumberChange={handleNumberChange} 
       />
       <h2>Numbers</h2>
-      <Persons filteredPersons={filteredItems} />
+      <Persons filteredPersons={filteredItems} deletePerson={deletePerson}/>
     </div>
   )
 }

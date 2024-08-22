@@ -1,3 +1,4 @@
+// eslint-disable-next-line react/prop-types
 export const Filter = ({ filter, onChange }) => {
     return (
     <div>
